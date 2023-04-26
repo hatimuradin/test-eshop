@@ -46,7 +46,7 @@ router.post("/", async (req, res) => {
     if (!user) return res.status(400).send("the user cannot be created!");
 
     let { passwordHash, ...hidedPassUser } = user["_doc"];
-    res.send(hidedPassUser);
+    res.status(201).send(hidedPassUser);
 });
 
 router.put("/:id", async (req, res) => {

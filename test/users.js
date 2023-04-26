@@ -5,17 +5,15 @@ const api = process.env.API_URL;
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const { User } = require("../models/user");
-
+mongoose.connect(process.env.DB).then(() => {
+    console.log(`Test db is: ${process.env.DB}`);
+});
 const { expect } = chai;
 chai.use(chaiHttp);
 
 describe("User creation test", () => {
-    before((done) => {
-        mongoose.connect(process.env.DB).then(() => {
-            console.log(`Test db is: ${process.env.DB}`);
-        });
-        User.deleteMany();
-        done();
+    before(async () => {
+        await User.deleteMany({});
     });
     it("starts the server", (done) => {
         let user = new User({
@@ -45,12 +43,10 @@ describe("User creation test", () => {
 
         chai.request(app)
             .post(`${api}/users/`)
-            .set({ Authorization: token })
+            .set({ Authorization: `Bearer ${token}` })
             .send(user_create_data)
             .end((err, res) => {
-                expect(res).to.have.status(200);
-                expect(res.body.status).to.equals("success");
-                expect(res.body.message).to.equals("Welcome To Testing API");
+                expect(res).to.have.status(201);
                 done();
             });
     });
